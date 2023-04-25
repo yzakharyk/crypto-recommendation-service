@@ -38,7 +38,7 @@ public class CsvCryptoCoinDataProvider implements CoinDataProvider {
 
         return inputStreamMap.entrySet().stream()
                 .map(entry -> getCryptoCoinFromInputStream(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @SneakyThrows

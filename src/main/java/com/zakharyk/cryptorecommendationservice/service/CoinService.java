@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -56,5 +57,43 @@ public class CoinService {
             default -> throw new IllegalStateException("Unexpected filter value: " + filter);
         }
         return new CryptoCoinDto(symbol, coinPrice.getValue(), coinPrice.getTimestamp());
+    }
+
+    public CoinValueDto getHighestNormalizedForDate(String date) {
+        var specifiedDate = LocalDate.parse(date);
+        var allAvailableCoins = coinRepository.getAllAvailableCoins();
+
+        var coinValues = new ArrayList<CoinValueDto>();
+
+        for (CryptoCoin coin : allAvailableCoins) {
+            var specifiedDatePrice = coin.getPrices().stream()
+                    .filter(price -> price.getTimestamp().toLocalDate().isEqual(specifiedDate))
+                    .findFirst();
+
+            if (specifiedDatePrice.isEmpty()) {
+                continue;
+            }
+
+            var maxPrice = coin.getPrices().stream()
+                    .filter(price -> price.getTimestamp().toLocalDate().isEqual(specifiedDate) || price.getTimestamp()
+                            .toLocalDate().isBefore(specifiedDate))
+                    .max(Comparator.comparing(CryptoCoin.Price::getValue))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No data at specified date found"));
+
+            var minPrice = coin.getPrices().stream()
+                    .filter(price -> price.getTimestamp().toLocalDate().isEqual(specifiedDate) || price.getTimestamp()
+                            .toLocalDate().isBefore(specifiedDate))
+                    .min(Comparator.comparing(CryptoCoin.Price::getValue))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No data at specified date found"));
+
+            var normalizedRange = specifiedDatePrice.get().getValue().subtract(minPrice.getValue())
+                    .divide(maxPrice.getValue().subtract(minPrice.getValue()), 2, RoundingMode.HALF_UP);
+
+            coinValues.add(new CoinValueDto(coin.getSymbol(), normalizedRange));
+        }
+
+        return coinValues.stream()
+                .max(Comparator.comparing(CoinValueDto::value))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No data at specified date found"));
     }
 }

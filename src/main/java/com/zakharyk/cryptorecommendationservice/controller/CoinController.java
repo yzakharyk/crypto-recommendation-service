@@ -20,12 +20,17 @@ public class CoinController {
     private final CoinService coinService;
 
     @GetMapping("/normalized")
-    public List<CoinValueDto> calculateNormalizedRange() {
+    public List<CoinValueDto> coinsByNormalizedRange() {
         return coinService.calculateNormalizedRange();
     }
 
     @GetMapping("/{symbol}")
-    public CryptoCoinDto getCoin(@PathVariable String symbol, @RequestParam(defaultValue = "newest") Filter filter) {
+    public CryptoCoinDto getCoin(@PathVariable String symbol, @RequestParam(defaultValue = "NEWEST") Filter filter) {
         return coinService.getCoinData(symbol, filter);
+    }
+
+    @GetMapping("/normalized/highest")
+    public CoinValueDto getHighestNormalizedForDate(@RequestParam String date) {
+        return coinService.getHighestNormalizedForDate(date);
     }
 }
