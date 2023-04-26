@@ -8,8 +8,11 @@
 
 **Endpoints:**
 1) all available endpoints are described here: http://localhost:8080/swagger-ui/index.html and can be called directly from swagger-ui
-2) have a good try :)
+2) please be informed that there exists rate limit for every endpoint (5 requests per minute)
+3) have a good try :)
+
 
 **To add new coins:**
 1) just put new csv files into _csv/prices_ folder with the file name format (**COIN_values.csv**) 
 2) they will be automatically picked up after the application restart
+

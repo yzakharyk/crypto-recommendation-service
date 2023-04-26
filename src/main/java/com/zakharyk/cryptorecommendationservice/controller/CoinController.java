@@ -23,19 +23,19 @@ public class CoinController {
     private final CoinService coinService;
 
     @GetMapping("/{symbol}")
-    @ApplyRateLimit(callsPerMinuteAllowed = 10)
+    @ApplyRateLimit(callsPerMinuteAllowed = 5)
     public CryptoCoinDto getCoin(@PathVariable String symbol, @RequestParam(defaultValue = "NEWEST") Filter filter) {
         return coinService.getCoin(symbol, filter);
     }
 
     @GetMapping("/normalized")
-    @ApplyRateLimit(callsPerMinuteAllowed = 3)
+    @ApplyRateLimit(callsPerMinuteAllowed = 5)
     public List<CoinValueDto> coinsByNormalizedRange() {
         return coinService.calculateNormalizedRange();
     }
 
     @GetMapping("/normalized/highest")
-    @ApplyRateLimit(callsPerMinuteAllowed = 3)
+    @ApplyRateLimit(callsPerMinuteAllowed = 5)
     public CoinValueDto getHighestNormalizedForDate(@Parameter(description = "Date in yyyy-MM-dd format")
                                                     @RequestParam LocalDate specifiedDate) {
         return coinService.getHighestNormalizedForDate(specifiedDate);
