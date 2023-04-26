@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  investments-be:
+  crypto-recommendation-service:
     build: ./
     image: crypto-recommendation-service:latest
     container_name: crypto-recommendation-service
