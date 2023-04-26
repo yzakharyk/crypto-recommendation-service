@@ -42,7 +42,7 @@ public class CsvCryptoCoinDataProvider implements CoinDataProvider {
     }
 
     @SneakyThrows
-    private Map<String, InputStream> getFileInputStreams() {
+    Map<String, InputStream> getFileInputStreams() {
         var csvFolder = new File(coinsCsvFolderLocation);
         Assert.isTrue(csvFolder.exists(),"csv folder not found");
 
@@ -52,13 +52,13 @@ public class CsvCryptoCoinDataProvider implements CoinDataProvider {
                             try {
                                 return new FileInputStream(file);
                             } catch (FileNotFoundException e) {
-                                throw new RuntimeException(e);
+                                throw new IllegalArgumentException(e);
                             }
                         }));
     }
 
     @SneakyThrows
-    private CryptoCoin getCryptoCoinFromInputStream(String symbol, InputStream inputStream) {
+    CryptoCoin getCryptoCoinFromInputStream(String symbol, InputStream inputStream) {
         var cryptoCoin = new CryptoCoin(symbol, new ArrayList<>());
 
         try (var bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
@@ -72,7 +72,7 @@ public class CsvCryptoCoinDataProvider implements CoinDataProvider {
         return cryptoCoin;
     }
 
-    private CryptoCoin.Price mapCsvLineToCryptoCoinPrice(String[] csvLine) {
+    CryptoCoin.Price mapCsvLineToCryptoCoinPrice(String[] csvLine) {
         var timestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(csvLine[0])),
                 TimeZone.getDefault().toZoneId());
         var price = new BigDecimal(csvLine[2]);

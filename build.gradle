@@ -41,7 +41,7 @@ jar {
 
 sonar {
 	properties {
-		property "sonar.exclusions", "**/model/*.java"
+		property "sonar.exclusions", "**/model/*.java, **/config/*.java, **/Application.java"
 	}
 }
 
