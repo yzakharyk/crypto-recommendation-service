@@ -2,3 +2,10 @@ app:
   coins:
     csv:
       folder: /tmp/csv/prices
+  ip-blacklist:
+    period-in-seconds: 60
+
+
+server:
+  error:
+    include-message: always

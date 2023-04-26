@@ -20,6 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CoinService {
+    private static final String NO_DATA_FOUND_MESSAGE = "No data at specified date found";
     private final CoinRepository coinRepository;
 
 
@@ -40,7 +41,7 @@ public class CoinService {
 
     public CryptoCoinDto getCoin(String symbol, Filter filter) {
         var cryptoCoin = coinRepository.getCryptoCoin(symbol)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No coin found"));
 
         if (CollectionUtils.isEmpty(cryptoCoin.getPrices())) {
             return new CryptoCoinDto(symbol, null, null);
@@ -59,8 +60,7 @@ public class CoinService {
         return new CryptoCoinDto(symbol, coinPrice.getValue(), coinPrice.getTimestamp());
     }
 
-    public CoinValueDto getHighestNormalizedForDate(String date) {
-        var specifiedDate = LocalDate.parse(date);
+    public CoinValueDto getHighestNormalizedForDate(LocalDate specifiedDate) {
         var allAvailableCoins = coinRepository.getAllAvailableCoins();
 
         var coinValues = new ArrayList<CoinValueDto>();
@@ -78,13 +78,13 @@ public class CoinService {
                     .filter(price -> price.getTimestamp().toLocalDate().isEqual(specifiedDate) || price.getTimestamp()
                             .toLocalDate().isBefore(specifiedDate))
                     .max(Comparator.comparing(CryptoCoin.Price::getValue))
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No data at specified date found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, NO_DATA_FOUND_MESSAGE));
 
             var minPrice = coin.getPrices().stream()
                     .filter(price -> price.getTimestamp().toLocalDate().isEqual(specifiedDate) || price.getTimestamp()
                             .toLocalDate().isBefore(specifiedDate))
                     .min(Comparator.comparing(CryptoCoin.Price::getValue))
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No data at specified date found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, NO_DATA_FOUND_MESSAGE));
 
             var normalizedRange = specifiedDatePrice.get().getValue().subtract(minPrice.getValue())
                     .divide(maxPrice.getValue().subtract(minPrice.getValue()), 2, RoundingMode.HALF_UP);
@@ -94,6 +94,6 @@ public class CoinService {
 
         return coinValues.stream()
                 .max(Comparator.comparing(CoinValueDto::value))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No data at specified date found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, NO_DATA_FOUND_MESSAGE));
     }
 }
