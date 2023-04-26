@@ -33,7 +33,7 @@ class CoinServiceTest {
     private CoinService coinService;
 
     @Test
-    void testCalculateNormalizedRange() {
+    void calculateNormalizedRange() {
         var coin1 = new CryptoCoin("BTC", Arrays.asList(
                 new CryptoCoin.Price(LocalDateTime.of(2022, 4, 1, 0, 0), BigDecimal.valueOf(50000)),
                 new CryptoCoin.Price(LocalDateTime.of(2022, 4, 2, 0, 0), BigDecimal.valueOf(55000)),
@@ -47,11 +47,18 @@ class CoinServiceTest {
 
         var result = coinService.calculateNormalizedRange();
 
-        assertEquals(2,result.size());
-        assertEquals("BTC",result.get(0).symbol());
+        assertEquals(2, result.size());
+        assertEquals("BTC", result.get(0).symbol());
         assertEquals(new BigDecimal("0.20"), result.get(0).value());
         assertEquals("ETH", result.get(1).symbol());
         assertEquals(new BigDecimal("0.14"), result.get(1).value());
+    }
+
+    @Test
+    void calculateNormalizedRange_emptyPrice() {
+        var coin = new CryptoCoin("ETH", List.of());
+        when(coinRepository.getAllAvailableCoins()).thenReturn(List.of(coin));
+        assertThrows(IllegalStateException.class, () -> coinService.calculateNormalizedRange());
     }
 
     @Test
@@ -79,6 +86,7 @@ class CoinServiceTest {
         assertEquals(price1.getValue(), result.price());
         assertEquals(price1.getTimestamp(), result.timestamp());
     }
+
     @Test
     void getCoin_newestFilter() {
         var price1 = new CryptoCoin.Price(LocalDateTime.of(2022, 4, 1, 0, 0), BigDecimal.valueOf(50000));
@@ -91,6 +99,7 @@ class CoinServiceTest {
         assertEquals(price2.getValue(), result.price());
         assertEquals(price2.getTimestamp(), result.timestamp());
     }
+
     @Test
     void getCoin_oldestFilter() {
         var price1 = new CryptoCoin.Price(LocalDateTime.of(2022, 4, 1, 0, 0), BigDecimal.valueOf(50000));
@@ -106,7 +115,7 @@ class CoinServiceTest {
 
 
     @Test
-     void getCoin_notFound() {
+    void getCoin_notFound() {
         when(coinRepository.getCryptoCoin("COIN1")).thenReturn(Optional.empty());
 
         var exception = assertThrows(ResponseStatusException.class, () -> coinService.getCoin("COIN1", Filter.MAX));
@@ -116,20 +125,7 @@ class CoinServiceTest {
     }
 
     @Test
-    void getCoin_withEmptyPriceList() {
-        var symbol = "BTC";
-        var filter = Filter.NEWEST;
-        var expected = new CryptoCoinDto(symbol, null, null);
-        var coin = new CryptoCoin(symbol, new ArrayList<>());
-        when(coinRepository.getCryptoCoin(symbol)).thenReturn(Optional.of(coin));
-
-        var actual = coinService.getCoin(symbol, filter);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-     void getHighestNormalizedForDate() {
+    void getHighestNormalizedForDate() {
         var testDate = LocalDate.of(2022, 1, 1);
         var allAvailableCoins = new ArrayList<CryptoCoin>();
         var coin1 = new CryptoCoin("BTC", Arrays.asList(
