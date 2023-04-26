@@ -1,4 +1,4 @@
 app:
   coins:
     csv:
-      folder: csv/prices
+      folder: /tmp/csv/prices

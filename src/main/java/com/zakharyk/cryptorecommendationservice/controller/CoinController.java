@@ -19,14 +19,14 @@ import java.util.List;
 public class CoinController {
     private final CoinService coinService;
 
+    @GetMapping("/{symbol}")
+    public CryptoCoinDto getCoin(@PathVariable String symbol, @RequestParam(defaultValue = "NEWEST") Filter filter) {
+        return coinService.getCoin(symbol, filter);
+    }
+
     @GetMapping("/normalized")
     public List<CoinValueDto> coinsByNormalizedRange() {
         return coinService.calculateNormalizedRange();
-    }
-
-    @GetMapping("/{symbol}")
-    public CryptoCoinDto getCoin(@PathVariable String symbol, @RequestParam(defaultValue = "NEWEST") Filter filter) {
-        return coinService.getCoinData(symbol, filter);
     }
 
     @GetMapping("/normalized/highest")

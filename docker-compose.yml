@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  investments-be:
+    build: ./
+    image: crypto-recommendation-service:latest
+    container_name: crypto-recommendation-service
+    ports:
+      - "8080:8080"

@@ -43,10 +43,8 @@ public class CsvCryptoCoinDataProvider implements CoinDataProvider {
 
     @SneakyThrows
     private Map<String, InputStream> getFileInputStreams() {
-        var csvCoinsFolderUrl = getClass().getClassLoader().getResource(coinsCsvFolderLocation);
-        Assert.notNull(csvCoinsFolderUrl, "csv folder not found");
-
-        var csvFolder = new File(csvCoinsFolderUrl.toURI().getPath());
+        var csvFolder = new File(coinsCsvFolderLocation);
+        Assert.isTrue(csvFolder.exists(),"csv folder not found");
 
         return Arrays.stream(Objects.requireNonNull(csvFolder.listFiles()))
                 .collect(Collectors.toMap(file -> file.getName().substring(0, file.getName().indexOf("_")),

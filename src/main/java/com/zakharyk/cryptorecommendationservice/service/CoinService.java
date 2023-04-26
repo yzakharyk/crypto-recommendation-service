@@ -38,7 +38,7 @@ public class CoinService {
         return result;
     }
 
-    public CryptoCoinDto getCoinData(String symbol, Filter filter) {
+    public CryptoCoinDto getCoin(String symbol, Filter filter) {
         var cryptoCoin = coinRepository.getCryptoCoin(symbol)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 

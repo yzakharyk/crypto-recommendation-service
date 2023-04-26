@@ -1,0 +1,4 @@
+app:
+  coins:
+    csv:
+      folder: /Users/yahorz/Work/epam/crypto-recommendation-service/csv/prices
