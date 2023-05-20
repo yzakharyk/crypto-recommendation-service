@@ -1,6 +1,4 @@
-**Demo application (deployed in GCP CE):**
-1) swagger: http://35.231.96.18:8080/swagger-ui/index.html
-2) one of the endpoints: http://35.231.96.18:8080/api/coins/BTC?filter=NEWEST
+This application is the test task for the project interview. It's written in Java17, SpringBoot 3 and packaged in Docker container.
 
 **To run application locally** (use java 17 or higher):
 1) Go to _application-local.yml_ and change the path to the csv/prices folder respectively to your project directory
